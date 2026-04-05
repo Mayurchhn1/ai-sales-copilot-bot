@@ -1,5 +1,9 @@
-# multi-agent-productivity-assistant
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-green)
+![Status](https://img.shields.io/badge/Status-Live-brightgreen)
+![Deployment](https://img.shields.io/badge/Deployed-Render-blue)
 # 🚀 Multi-Agent Productivity Assistant
+
 
 An AI-powered multi-agent system that helps users manage tasks, schedules, and information through coordinated agents and external tools.
 
@@ -73,12 +77,13 @@ Plan my workday
     }
   ]
 }
-🔷 Key Features
-	•	Multi-agent coordination
-	•	Tool integration (MCP-style)
-	•	Structured data storage
-	•	Workflow automation
-	•	API-based system
+## 🔷 Key Features
+
+- Multi-agent coordination
+- Tool integration (MCP-style)
+- Structured data storage
+- Workflow automation
+- API-based system
 
 ⸻
 
@@ -100,9 +105,9 @@ Plan my workday
 
 ⸻
 
-🔷 Demo Output
+## 📊 Demo Output
 
-![Demo Output](output.png)
+![Demo Output](multi_agent_assistant_output.png)
 
 ⸻
 
