@@ -59,6 +59,8 @@ This assistant simplifies decision-making and improves productivity through a st
 
 ## 📡 API Usage
 
+---
+
 ### Endpoint:
 POST /run
 
@@ -78,6 +80,7 @@ POST /run
   },
   "message_suggestion": "Hi, just following up on our discussion. Let me know a convenient time to connect."
 }
+```
 
 ---
 
@@ -95,3 +98,5 @@ POST /run
 
 Watch the demo here:  
 https://your-video-link-here
+
+---
