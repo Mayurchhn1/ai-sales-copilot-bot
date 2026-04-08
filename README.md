@@ -7,8 +7,42 @@
 
 🌐 Live Demo: https://multi-agent-productivity-assistant-y8sv.onrender.com  
 📄 API Docs: https://multi-agent-productivity-assistant-y8sv.onrender.com/docs  
+ 
+---
 
-An AI-powered multi-agent system that helps users manage tasks, schedules, and workflows using coordinated agents and external tools.
+## 🚀 What This Project Solves
+
+Sales and business professionals lose time managing follow-ups, planning workdays, and organizing tasks.
+
+This AI-powered multi-agent system automates:
+- Workday planning
+- Sales follow-ups
+- Task prioritization
+
+It acts like a virtual assistant that thinks, plans, and executes workflows.
+
+💡 Designed to scale with real-world integrations like CRM, WhatsApp, and Calendar using MCP-style architecture.
+---
+
+## 💼 Real Use Cases
+
+### 1. Sales Follow-up Planning
+Input: "Plan my follow-up calls"
+
+Output:
+- Call warm leads (10 AM)
+- Send proposals (2 PM)
+- Check pending replies (5 PM)
+
+---
+
+### 2. Daily Productivity Planning
+Input: "Plan my workday"
+
+Output:
+- Emails (9 AM)
+- Meetings (1 PM)
+- Deep Work (6 PM)
 
 ---
 
