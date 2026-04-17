@@ -3,8 +3,11 @@ import requests
 
 app = FastAPI()
 
-BOT_TOKEN = "8671553804:AAGZlFDamXm4Kn1fw5s6MrjUVwwXGrkDUJE"
+BOT_TOKEN = "8671553804:AAEpdPaohxoSB3VZ2N0I7ngGTiwsAMaiQhQ"
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
+
+def generate_response(user_input):
+    return f"🤖 AI Suggestion:\n\nBased on your input: '{user_input}', focus on value-driven messaging and clear CTA."
 
 def send_message(chat_id, text):
     requests.post(f"{TELEGRAM_API}/sendMessage", json={
@@ -31,6 +34,7 @@ async def webhook(req: Request):
             send_message(chat_id, "Tell me your sales goal")
 
         else:
-            send_message(chat_id, f"You said: {text}")
+            response = generate_response(text)
+            send_message(chat_id, response)
 
     return {"ok": True}
