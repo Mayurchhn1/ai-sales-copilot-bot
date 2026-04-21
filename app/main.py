@@ -2,6 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.orchestrator import run_agent
+import logging
+
+# ✅ Logging setup
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Multi-Agent Productivity Assistant",
@@ -10,7 +15,7 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# ✅ CORS (required for index.html to call your API)
+# ✅ CORS (required for UI)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,9 +24,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ Request model
 class QueryRequest(BaseModel):
     query: str
 
+# ✅ Response models
 class TaskItem(BaseModel):
     task: str
     time: str
@@ -30,13 +37,33 @@ class TaskItem(BaseModel):
 
 class QueryResponse(BaseModel):
     input: str
+    mode: str
+    summary: str
     plan: list[TaskItem]
 
+# ✅ Root endpoint
 @app.get("/")
 def home():
-    return {"message": "Multi-Agent Productivity Assistant Running"}
+    return {
+        "status": "running",
+        "app": "Multi-Agent Productivity Assistant",
+        "docs": "/docs"
+    }
 
+# ✅ Main AI endpoint (WITH logging)
 @app.post("/run", response_model=QueryResponse)
 def run(req: QueryRequest):
-    result = run_agent(req.query)
-    return result
+    try:
+        return run_agent(req.query)
+
+    except Exception as e:
+        # 🔴 Logs visible in Render logs
+        logger.error(f"Error in /run: {str(e)}")
+
+        # 🟢 Safe response to user
+        return {
+            "input": req.query,
+            "mode": "error",
+            "summary": "Something went wrong. Please try again.",
+            "plan": []
+        }
