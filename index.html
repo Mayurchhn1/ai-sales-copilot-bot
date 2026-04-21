@@ -1,143 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <title>FlowPlan AI</title>
-
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #0B1F3A, #123A63);
-      color: #fff;
-      margin: 0;
-      padding: 60px 20px;
-    }
-
-    .container {
-      max-width: 820px;
-      margin: auto;
-    }
-
-    h1 {
-      font-size: 34px;
-      margin-bottom: 5px;
-    }
-
-    .tagline {
-      opacity: 0.8;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .examples {
-      opacity: 0.5;
-      font-size: 14px;
-      margin-bottom: 30px;
-      line-height: 1.6;
-    }
-
-    .input-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    input {
-      flex: 1;
-      padding: 14px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-      outline: none;
-    }
-
-    button {
-      padding: 14px 22px;
-      background: #FF8C42;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .summary {
-      margin-top: 30px;
-      padding: 18px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 10px;
-      line-height: 1.5;
-    }
-
-    .card {
-      margin-top: 15px;
-      padding: 16px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.06);
-      transition: 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-    }
-
-    .meta {
-      opacity: 0.6;
-      font-size: 14px;
-      margin-top: 6px;
-    }
-
-    .priority {
-      margin-top: 8px;
-      font-weight: 600;
-    }
-
-    .footer {
-      margin-top: 40px;
-      opacity: 0.4;
-      font-size: 13px;
-      text-align: center;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="container">
-
-  <h1>FlowPlan AI</h1>
-
-  <div class="tagline">
-    Tell me what you want to get done — I’ll turn it into a focused, structured plan.
-  </div>
-
-  <div class="examples">
-    Try things like:<br>
-    • Plan my day for sales<br>
-    • Organize my work tasks<br>
-    • Build a learning routine
-  </div>
-
-  <div class="input-row">
-    <input id="query" placeholder="What do you want to accomplish today?" />
-    <button onclick="generate()">Create Plan</button>
-  </div>
-
-  <div id="summary"></div>
-  <div id="results"></div>
-
-  <div class="footer">
-    Multi-agent system for planning, prioritization & execution
-  </div>
-
-</div>
-
 <script>
 async function generate() {
-  const query = document.getElementById("query").value.trim();
+  const queryInput = document.getElementById("query");
+  const button = document.querySelector("button");
+  const query = queryInput.value.trim();
 
   if (!query) {
     alert("Just type what you want to get done.");
@@ -146,6 +11,10 @@ async function generate() {
 
   const resultsDiv = document.getElementById("results");
   const summaryDiv = document.getElementById("summary");
+
+  // Disable button while loading
+  button.disabled = true;
+  button.innerText = "Working...";
 
   resultsDiv.innerHTML = "Thinking through your plan...";
   summaryDiv.innerHTML = "";
@@ -159,18 +28,37 @@ async function generate() {
       body: JSON.stringify({ query })
     });
 
+    if (!res.ok) {
+      throw new Error("API response failed");
+    }
+
     const data = await res.json();
 
     resultsDiv.innerHTML = "";
 
-    // Summary
+    // Error mode
+    if (data.mode === "error") {
+      summaryDiv.innerHTML = `
+        <div class="summary">
+          ⚠️ ${data.summary}
+        </div>
+      `;
+      return;
+    }
+
+    // Summary + Mode
     summaryDiv.innerHTML = `
       <div class="summary">
+        <b>Mode:</b> ${data.mode}<br><br>
         ${data.summary}
       </div>
     `;
 
-    // Tasks
+    if (!data.plan || data.plan.length === 0) {
+      resultsDiv.innerHTML = "No tasks generated. Try rephrasing.";
+      return;
+    }
+
     data.plan.forEach(item => {
       const priorityText =
         item.priority === 3 ? "High priority — act early" :
@@ -190,10 +78,18 @@ async function generate() {
     });
 
   } catch (err) {
-    resultsDiv.innerHTML = "Something didn’t load properly. Try again.";
+    resultsDiv.innerHTML = "⚠️ Unable to connect. Try again in a moment.";
+  } finally {
+    // Re-enable button
+    button.disabled = false;
+    button.innerText = "Create Plan";
   }
 }
-</script>
 
-</body>
-</html>
+// 🔥 Enter key support
+document.getElementById("query").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    generate();
+  }
+});
+</script>
