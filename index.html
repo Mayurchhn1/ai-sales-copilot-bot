@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Productivity Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0B1F3A;
+      color: white;
+      padding: 40px;
+    }
+    h1 { color: #FF8C42; }
+    input {
+      width: 60%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      padding: 12px 20px;
+      background: #FF8C42;
+      border: none;
+      color: white;
+      cursor: pointer;
+      margin-left: 10px;
+      border-radius: 6px;
+    }
+    .card {
+      background: #123A63;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+    .priority {
+      font-weight: bold;
+      color: #FF8C42;
+    }
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #1d4f82;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Multi-Agent Productivity Assistant</h1>
+
+<input id="query" placeholder="e.g. Plan my day for sales">
+<button onclick="generate()">Generate Plan</button>
+
+<div id="summary"></div>
+<div id="results"></div>
+
+<script>
+async function generate() {
+  const query = document.getElementById("query").value;
+
+  if (!query) {
+    alert("Please enter a query");
+    return;
+  }
+
+  document.getElementById("results").innerHTML = "Loading...";
+  document.getElementById("summary").innerHTML = "";
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/run", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const data = await response.json();
+
+    const resultsDiv = document.getElementById("results");
+    const summaryDiv = document.getElementById("summary");
+
+    resultsDiv.innerHTML = "";
+
+    // Optional summary (if you added it)
+    if (data.summary) {
+      summaryDiv.innerHTML = `
+        <div class="summary">
+          <b>Summary:</b> ${data.summary}
+        </div>
+      `;
+    }
+
+    data.plan.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "card";
+
+      div.innerHTML = `
+        <div><b>${item.task}</b></div>
+        <div>⏰ ${item.time} | ${item.type}</div>
+        <div class="priority">Priority: ${item.priority}</div>
+      `;
+
+      resultsDiv.appendChild(div);
+    });
+
+  } catch (error) {
+    document.getElementById("results").innerHTML = "Error connecting to API";
+  }
+}
+</script>
+
+</body>
+</html>
