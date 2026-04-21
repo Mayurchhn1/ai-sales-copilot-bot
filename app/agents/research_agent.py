@@ -1,52 +1,36 @@
-from app.mcp.mcp_client import fetch_data
-
 def enrich_task(task):
-    task_text = task.get("task", "")
-    task_lower = task_text.lower()
+    task_text = task.get("task", "").lower()
 
-    try:
-        info = fetch_data(task_text)
+    if "call" in task_text:
+        context = "Focus on decision-makers and clear value proposition"
 
-        # ✅ If MCP gives meaningful data → use it
-        if info and len(info.strip()) > 20:
-            context = info[:80]
+    elif "follow up" in task_text:
+        context = "Personalize message based on last interaction"
 
-        # 🔥 Sales-specific intelligence
-        elif "call" in task_lower:
-            context = "Focus on decision-makers and clear value proposition"
+    elif "proposal" in task_text:
+        context = "Highlight ROI and client-specific benefits"
 
-        elif "follow up" in task_lower:
-            context = "Personalize message based on last interaction"
+    elif "crm" in task_text:
+        context = "Ensure all deal stages are accurately updated"
 
-        elif "proposal" in task_lower:
-            context = "Highlight ROI and client-specific benefits"
+    elif "clarify" in task_text:
+        context = "Define clear outcome and success criteria"
 
-        elif "crm" in task_lower or "pipeline" in task_lower:
-            context = "Ensure all deal stages are accurately updated"
+    elif "identify" in task_text:
+        context = "List specific activities needed to move forward"
 
-        # 🧠 Generic intelligence (non-sales)
-        elif "clarify" in task_lower:
-            context = "Define clear outcome and success criteria"
+    elif "prioritize" in task_text:
+        context = "Focus on high-impact actions first"
 
-        elif "identify" in task_lower:
-            context = "List specific activities needed to move forward"
+    elif "execute" in task_text:
+        context = "Take immediate action on top priority"
 
-        elif "prioritize" in task_lower:
-            context = "Focus on high-impact actions first"
+    elif "review" in task_text:
+        context = "Evaluate results and refine approach"
 
-        elif "execute" in task_lower:
-            context = "Take immediate action on top priority"
-
-        elif "review" in task_lower:
-            context = "Evaluate results and refine approach"
-
-        # ⚡ Final fallback
-        else:
-            context = "Maintain execution discipline"
-
-    except Exception:
-        context = "Proceed with best judgment"
+    else:
+        context = "Maintain focus and execution discipline"
 
     return {
-        "task": f"{task_text} → {context}"
+        "task": f"{task.get('task', '')} → {context}"
     }
