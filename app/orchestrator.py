@@ -14,7 +14,7 @@ Convert the user's intent into a structured execution plan.
 User Input:
 {user_input}
 
-Return JSON in this format:
+Return JSON:
 {{
   "mode": "sales | work | learning | general",
   "summary": "Short actionable summary",
@@ -32,12 +32,10 @@ Return JSON in this format:
         response = client.chat.completions.create(
             model="gpt-4.1-mini",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
         )
 
         content = response.choices[0].message.content.strip()
 
-        # ✅ SAFE JSON PARSE (prevents crash)
         try:
             return json.loads(content)
         except:
@@ -52,6 +50,6 @@ Return JSON in this format:
         return {
             "input": user_input,
             "mode": "error",
-            "summary": f"AI error: {str(e)}",
+            "summary": str(e),
             "plan": []
         }
