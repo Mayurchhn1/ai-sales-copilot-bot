@@ -44,7 +44,7 @@ class QueryResponse(BaseModel):
 # ✅ Root endpoint (health + info)
 @app.get("/")
 def home():
-    return {"status": "ok"}
+    return {"status": "ok", "debug": "NEW VERSION LIVE"}
 
 # ✅ Main AI endpoint (WITH logging)
 @app.post("/run", response_model=QueryResponse)
