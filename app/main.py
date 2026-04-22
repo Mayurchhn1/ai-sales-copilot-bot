@@ -44,16 +44,7 @@ class QueryResponse(BaseModel):
 # ✅ Root endpoint (health + info)
 @app.get("/")
 def home():
-    return {
-        "status": "running",
-        "app": "FlowPlan AI",
-        "version": "2.0.0",
-        "message": "AI execution planning API is live 🚀",
-        "endpoints": {
-            "docs": "/docs",
-            "run": "/run"
-        }
-    }
+    return {"status": "ok"}
 
 # ✅ Main AI endpoint (WITH logging)
 @app.post("/run", response_model=QueryResponse)
