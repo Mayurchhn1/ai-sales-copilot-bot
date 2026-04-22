@@ -41,13 +41,18 @@ class QueryResponse(BaseModel):
     summary: str
     plan: list[TaskItem]
 
-# ✅ Root endpoint
+# ✅ Root endpoint (health + info)
 @app.get("/")
 def home():
     return {
         "status": "running",
-        "app": "Multi-Agent Productivity Assistant",
-        "docs": "/docs"
+        "app": "FlowPlan AI",
+        "version": "2.0.0",
+        "message": "AI execution planning API is live 🚀",
+        "endpoints": {
+            "docs": "/docs",
+            "run": "/run"
+        }
     }
 
 # ✅ Main AI endpoint (WITH logging)
