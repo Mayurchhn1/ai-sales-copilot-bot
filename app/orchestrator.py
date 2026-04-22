@@ -1,39 +1,57 @@
-from app.agents.task_agent import create_tasks
-from app.agents.calendar_agent import schedule_tasks
-from app.agents.research_agent import enrich_task
+import os
+import json
+from openai import OpenAI
 
-def run_agent(user_input):
-    query = user_input.lower()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    # 🔥 Mode detection
-    if "sales" in query or "client" in query or "deal" in query:
-        mode = "sales"
+def run_agent(user_input: str):
+    try:
+        prompt = f"""
+You are an execution planning assistant.
 
-        tasks = [
-            {"task": "Call top 5 warm leads"},
-            {"task": "Follow up with previous prospects"},
-            {"task": "Prepare proposal for active client"},
-            {"task": "Update CRM and pipeline status"}
-        ]
+Convert the user's intent into a structured execution plan.
 
-        summary = "Focus on high-impact sales actions: outreach, follow-ups, and deal progression."
+User Input:
+{user_input}
 
-    else:
-        mode = "generic"
+Return JSON in this format:
+{{
+  "mode": "sales | work | learning | general",
+  "summary": "Short actionable summary",
+  "plan": [
+    {{
+      "task": "Clear task",
+      "time": "e.g. 9:00 AM",
+      "type": "Deep Work | Execution | Review",
+      "priority": 1
+    }}
+  ]
+}}
+"""
 
-        tasks = create_tasks(user_input)
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+        )
 
-        summary = "Structured plan generated to organize and execute your day effectively."
+        content = response.choices[0].message.content.strip()
 
-    # Enrich tasks
-    enriched_tasks = [enrich_task(t) for t in tasks]
+        # ✅ SAFE JSON PARSE (prevents crash)
+        try:
+            return json.loads(content)
+        except:
+            return {
+                "input": user_input,
+                "mode": "general",
+                "summary": content,
+                "plan": []
+            }
 
-    # Schedule tasks
-    schedule = schedule_tasks(enriched_tasks)
-
-    return {
-        "input": user_input,
-        "mode": mode,
-        "summary": summary,
-        "plan": schedule
-    }
+    except Exception as e:
+        return {
+            "input": user_input,
+            "mode": "error",
+            "summary": f"AI error: {str(e)}",
+            "plan": []
+        }
